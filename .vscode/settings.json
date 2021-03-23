@@ -3,6 +3,7 @@
         "datasource",
         "structopt",
         "subcommand",
+        "tinytemplate",
         "usecase"
     ]
 }
