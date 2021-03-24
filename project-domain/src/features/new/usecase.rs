@@ -38,7 +38,7 @@ mod tests {
 
     #[async_trait]
     impl Repository for MockRepository {
-        async fn create_project_directory(&self, project_name: &str) -> std::io::Result<()> {
+        async fn create_project_directory(&self, _project_name: &str) -> std::io::Result<()> {
             Ok(())
         }
     }

@@ -24,7 +24,6 @@ impl Datasource for NewDatasource {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn test() {
