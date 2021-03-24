@@ -8,11 +8,14 @@ static TEMPLATE: &str = "use super::repository::\\{{name_title_case}Repository, 
 
 pub trait Usecase \\{}
 
-pub struct {name_title_case}Usecase \\{}
+pub struct {name_title_case}Usecase \\{
+    repository: Box<dyn Repository + Send + Sync>
+}
 
 impl {name_title_case}Usecase \\{
     pub fn new() -> Self \\{
-        Self \\{}
+        let repository = Box::new({name_title_case}Repository::new());
+        Self \\{ repository }
     }
 }
 
@@ -66,11 +69,14 @@ mod tests {
 
 pub trait Usecase {}
 
-pub struct TestUsecase {}
+pub struct TestUsecase {
+    repository: Box<dyn Repository + Send + Sync>
+}
 
 impl TestUsecase {
     pub fn new() -> Self {
-        Self {}
+        let repository = Box::new(TestRepository::new());
+        Self { repository }
     }
 }
 
