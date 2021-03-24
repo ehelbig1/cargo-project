@@ -22,10 +22,14 @@ impl NewUsecase {
 #[async_trait]
 impl Usecase for NewUsecase {
     async fn create_project(&self, project_name: &str) -> String {
-        let future_project_directory = self.repository.create_project_directory(project_name);
-        let future_git_repo = self.repository.create_git_repo(project_name);
+        self.repository
+            .create_git_repo(project_name)
+            .await
+            .expect(&format!("Error creating git repo for: {}", project_name));
 
-        try_join!(future_project_directory, future_git_repo).expect("Error creating project");
+        let future_gitignore = self.repository.create_gitignore(project_name, b"/target");
+
+        try_join!(future_gitignore).expect(&format!("Error creating project: {}", project_name));
 
         format!("Successfully created project: {}", project_name)
     }
@@ -39,11 +43,15 @@ mod tests {
 
     #[async_trait]
     impl Repository for MockRepository {
-        async fn create_project_directory(&self, _project_name: &str) -> std::io::Result<()> {
+        async fn create_git_repo(&self, _project_name: &str) -> std::io::Result<()> {
             Ok(())
         }
 
-        async fn create_git_repo(&self, _project_name: &str) -> std::io::Result<()> {
+        async fn create_gitignore(
+            &self,
+            _project_name: &str,
+            _content: &[u8],
+        ) -> std::io::Result<()> {
             Ok(())
         }
     }

@@ -1,12 +1,12 @@
-use async_std::fs::DirBuilder;
+use async_std::{fs::File, io::prelude::WriteExt, path::Path};
 use async_trait::async_trait;
 use std::io;
 use std::process::Command;
 
 #[async_trait]
 pub trait Datasource {
-    async fn create_project_directory(&self, project_name: &str) -> io::Result<()>;
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()>;
+    async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
 }
 
 pub struct NewDatasource {}
@@ -19,10 +19,6 @@ impl NewDatasource {
 
 #[async_trait]
 impl Datasource for NewDatasource {
-    async fn create_project_directory(&self, project_name: &str) -> io::Result<()> {
-        DirBuilder::new().create(project_name).await
-    }
-
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()> {
         let output = Command::new("git").arg("init").arg(project_name).output()?;
 
@@ -37,6 +33,14 @@ impl Datasource for NewDatasource {
         } else {
             return Ok(());
         }
+    }
+
+    async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()> {
+        let path = format!("{}/.gitignore", project_name);
+        let path = Path::new(&path);
+        let mut file = File::create(path).await?;
+
+        file.write_all(content).await
     }
 }
 

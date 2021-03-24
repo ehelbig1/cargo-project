@@ -5,8 +5,8 @@ use project_data::features::new::datasource::{Datasource, NewDatasource};
 
 #[async_trait]
 pub trait Repository {
-    async fn create_project_directory(&self, project_name: &str) -> io::Result<()>;
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()>;
+    async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
 }
 
 pub struct NewRepository {
@@ -22,12 +22,14 @@ impl NewRepository {
 
 #[async_trait]
 impl Repository for NewRepository {
-    async fn create_project_directory(&self, project_name: &str) -> io::Result<()> {
-        self.datasource.create_project_directory(project_name).await
-    }
-
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()> {
         self.datasource.create_git_repo(project_name).await
+    }
+
+    async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()> {
+        self.datasource
+            .create_gitignore(project_name, content)
+            .await
     }
 }
 
@@ -39,26 +41,14 @@ mod tests {
 
     #[async_trait]
     impl Datasource for MockDatasource {
-        async fn create_project_directory(&self, _project_name: &str) -> io::Result<()> {
-            Ok(())
-        }
-
         async fn create_git_repo(&self, _project_name: &str) -> io::Result<()> {
             Ok(())
         }
+
+        async fn create_gitignore(&self, _project_name: &str, _content: &[u8]) -> io::Result<()> {
+            Ok(())
+        }
     }
-
-    #[async_std::test]
-    async fn test_create_project_directory() {
-        let datasource = Box::new(MockDatasource {});
-        let repository = NewRepository { datasource };
-
-        let expect = ();
-        let got = repository.create_project_directory("test").await.unwrap();
-
-        assert_eq!(expect, got)
-    }
-
     #[async_std::test]
     async fn test_create_git_repo() {
         let datasource = Box::new(MockDatasource {});
@@ -66,6 +56,17 @@ mod tests {
 
         let expect = ();
         let got = repository.create_git_repo("test").await.unwrap();
+
+        assert_eq!(expect, got)
+    }
+
+    #[async_std::test]
+    async fn test_create_gitignore() {
+        let datasource = Box::new(MockDatasource {});
+        let repository = NewRepository { datasource };
+
+        let expect = ();
+        let got = repository.create_gitignore("test", b"test").await.unwrap();
 
         assert_eq!(expect, got)
     }
