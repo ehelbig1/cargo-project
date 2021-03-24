@@ -58,7 +58,7 @@ impl Usecase for AddUsecase {
             .render()
             .unwrap();
         let data_parent_mod_file_content = ModFileTemplate::new(vec![name]).render().unwrap();
-        let datasource_file_content = DatasourceTemplate::new(name).render().unwrap();
+        let datasource_file_content = DatasourceTemplate::new(&name_title_case).render().unwrap();
         let models_file_content = ModelsTemplate::new(name).render().unwrap();
 
         let cli_update_future = self.repository.update_cli(
