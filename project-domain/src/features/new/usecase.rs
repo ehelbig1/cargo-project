@@ -3,6 +3,9 @@ use futures::try_join;
 
 use super::repository::{NewRepository, Repository};
 
+use crate::core::templates::cargo::CargoTemplate;
+use crate::core::templates::Template;
+
 #[async_trait]
 pub trait Usecase {
     async fn create_project(&self, project_name: &str) -> String;
@@ -29,7 +32,15 @@ impl Usecase for NewUsecase {
 
         let future_gitignore = self.repository.create_gitignore(project_name, b"/target");
 
-        try_join!(future_gitignore).expect(&format!("Error creating project: {}", project_name));
+        let cargo_file_content = CargoTemplate::new(project_name)
+            .render()
+            .expect("Error rendering Cargo template");
+        let future_cargo_file = self
+            .repository
+            .create_cargo_file(project_name, cargo_file_content.as_bytes());
+
+        try_join!(future_gitignore, future_cargo_file)
+            .expect(&format!("Error creating project: {}", project_name));
 
         format!("Successfully created project: {}", project_name)
     }
@@ -48,6 +59,14 @@ mod tests {
         }
 
         async fn create_gitignore(
+            &self,
+            _project_name: &str,
+            _content: &[u8],
+        ) -> std::io::Result<()> {
+            Ok(())
+        }
+
+        async fn create_cargo_file(
             &self,
             _project_name: &str,
             _content: &[u8],

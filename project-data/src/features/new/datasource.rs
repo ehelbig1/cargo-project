@@ -7,6 +7,7 @@ use std::process::Command;
 pub trait Datasource {
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()>;
     async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
+    async fn create_cargo_file(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
 }
 
 pub struct NewDatasource {}
@@ -37,6 +38,14 @@ impl Datasource for NewDatasource {
 
     async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()> {
         let path = format!("{}/.gitignore", project_name);
+        let path = Path::new(&path);
+        let mut file = File::create(path).await?;
+
+        file.write_all(content).await
+    }
+
+    async fn create_cargo_file(&self, project_name: &str, content: &[u8]) -> io::Result<()> {
+        let path = format!("{}/Cargo.toml", project_name);
         let path = Path::new(&path);
         let mut file = File::create(path).await?;
 
