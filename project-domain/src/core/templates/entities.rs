@@ -4,7 +4,7 @@ use tinytemplate::TinyTemplate;
 
 use super::Template;
 
-static TEMPLATE: &str = "Hello {name}!";
+static TEMPLATE: &str = "";
 
 #[derive(Debug, Serialize)]
 pub struct EntitiesTemplate<'a> {

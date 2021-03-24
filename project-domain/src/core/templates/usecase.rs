@@ -13,6 +13,7 @@ pub struct {name_title_case}Usecase \\{}
 impl {name_title_case}Usecase \\{
     pub fn new() -> Self \\{
         Self \\{}
+    }
 }
 
 impl Usecase for {name_title_case}Usecase \\{}
@@ -70,6 +71,7 @@ pub struct TestUsecase {}
 impl TestUsecase {
     pub fn new() -> Self {
         Self {}
+    }
 }
 
 impl Usecase for TestUsecase {}
