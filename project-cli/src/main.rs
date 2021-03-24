@@ -14,6 +14,7 @@ struct Project {
 #[derive(Debug, PartialEq, StructOpt)]
 enum Cmd {
     Add(features::add::Add),
+    New(features::new::New),
 }
 
 fn main() {
@@ -21,5 +22,6 @@ fn main() {
 
     match project.cmd {
         Cmd::Add(add) => add.run(),
+        Cmd::New(new) => new.run(),
     }
 }

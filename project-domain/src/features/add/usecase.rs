@@ -153,7 +153,7 @@ mod tests {
         let repository = Box::new(MockRepository {});
         let usecase = AddUsecase { repository };
 
-        let expect = String::from("Successfully added feature: test");
+        let expect = String::from("Not currently in the root of a project");
         let got = usecase.add_feature("test").await;
 
         assert_eq!(expect, got)
