@@ -13,6 +13,8 @@ use crate::core::templates::repository::RepositoryTemplate;
 use crate::core::templates::usecase::UsecaseTemplate;
 use crate::core::templates::Template;
 
+use crate::core::utils::in_root_directory;
+
 #[async_trait]
 pub trait Usecase {
     async fn add_feature(&self, name: &str) -> String;
@@ -39,6 +41,10 @@ impl Usecase for AddUsecase {
             .next()
             .expect(&format!("Error parsing cargo package name: {}", PKG_NAME));
         let name_title_case = titlecase(name);
+
+        if !in_root_directory(project).await {
+            return String::from("Not currently in the root of a project");
+        }
 
         let cli_file_content = CliTemplate::new(name, &name_title_case).render().unwrap();
         let cli_parent_mod_file_content = ModFileTemplate::new(vec![name]).render().unwrap();
