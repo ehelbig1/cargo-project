@@ -13,3 +13,4 @@ futures = "0.3.13"
 project-data = { path = "../project-data" }
 serde = { version = "1.0", features = ["derive"] }
 tinytemplate = "1.2.1"
+titlecase = "1.1.0"

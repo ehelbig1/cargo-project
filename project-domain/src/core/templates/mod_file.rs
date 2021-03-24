@@ -4,16 +4,16 @@ use tinytemplate::TinyTemplate;
 
 use super::Template;
 
-static TEMPLATE: &str = "Hello {name}!";
+static TEMPLATE: &str = "{{ for resource in resources }}pub mod {resource};\n{{ endfor }}";
 
 #[derive(Debug, Serialize)]
 pub struct ModFileTemplate<'a> {
-    name: &'a str,
+    resources: Vec<&'a str>,
 }
 
 impl<'a> ModFileTemplate<'a> {
-    pub fn new(name: &'a str) -> Self {
-        Self { name }
+    pub fn new(resources: Vec<&'a str>) -> Self {
+        Self { resources }
     }
 }
 
@@ -25,5 +25,20 @@ impl<'a> Template for ModFileTemplate<'a> {
         let rendered = template.render("cli", self)?;
 
         Ok(rendered)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_render() {
+        let template = ModFileTemplate::new(vec!["test", "test2", "test3"]);
+
+        let expect = "pub mod test;\npub mod test2;\npub mod test3;\n";
+        let got = &template.render().unwrap();
+
+        assert_eq!(expect, got)
     }
 }

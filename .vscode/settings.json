@@ -1,9 +1,11 @@
 {
     "cSpell.words": [
         "datasource",
+        "endfor",
         "structopt",
         "subcommand",
         "tinytemplate",
+        "titlecase",
         "usecase"
     ]
 }
