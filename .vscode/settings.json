@@ -4,6 +4,7 @@
         "endfor",
         "structopt",
         "subcommand",
+        "subproject",
         "tinytemplate",
         "titlecase",
         "usecase"

@@ -39,8 +39,18 @@ impl Usecase for NewUsecase {
             .repository
             .create_cargo_file(project_name, cargo_file_content.as_bytes());
 
-        try_join!(future_gitignore, future_cargo_file)
-            .expect(&format!("Error creating project: {}", project_name));
+        let future_presentation_layer = self.repository.create_presentation_layer(project_name);
+        let future_domain_layer = self.repository.create_domain_layer(project_name);
+        let future_data_layer = self.repository.create_data_layer(project_name);
+
+        try_join!(
+            future_gitignore,
+            future_cargo_file,
+            future_presentation_layer,
+            future_domain_layer,
+            future_data_layer
+        )
+        .expect(&format!("Error creating project: {}", project_name));
 
         format!("Successfully created project: {}", project_name)
     }
@@ -71,6 +81,18 @@ mod tests {
             _project_name: &str,
             _content: &[u8],
         ) -> std::io::Result<()> {
+            Ok(())
+        }
+
+        async fn create_presentation_layer(&self, _project_name: &str) -> std::io::Result<()> {
+            Ok(())
+        }
+
+        async fn create_domain_layer(&self, _project_name: &str) -> std::io::Result<()> {
+            Ok(())
+        }
+
+        async fn create_data_layer(&self, _project_name: &str) -> std::io::Result<()> {
             Ok(())
         }
     }

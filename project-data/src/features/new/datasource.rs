@@ -8,6 +8,9 @@ pub trait Datasource {
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()>;
     async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
     async fn create_cargo_file(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
+    async fn create_presentation_layer(&self, project_name: &str) -> io::Result<()>;
+    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()>;
+    async fn create_data_layer(&self, project_name: &str) -> io::Result<()>;
 }
 
 pub struct NewDatasource {}
@@ -31,9 +34,9 @@ impl Datasource for NewDatasource {
                     project_name
                 ),
             ));
-        } else {
-            return Ok(());
         }
+
+        Ok(())
     }
 
     async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()> {
@@ -50,6 +53,51 @@ impl Datasource for NewDatasource {
         let mut file = File::create(path).await?;
 
         file.write_all(content).await
+    }
+
+    async fn create_presentation_layer(&self, project_name: &str) -> io::Result<()> {
+        let path = format!("{}/{}-presentation", project_name, project_name);
+        let path = Path::new(&path);
+        let output = Command::new("cargo").arg("new").arg(path).output()?;
+
+        if !output.status.success() {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                format!("Error creating rust subproject: {}", project_name),
+            ));
+        }
+
+        Ok(())
+    }
+
+    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()> {
+        let path = format!("{}/{}-domain", project_name, project_name);
+        let path = Path::new(&path);
+        let output = Command::new("cargo").arg("new").arg(path).output()?;
+
+        if !output.status.success() {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                format!("Error creating rust subproject: {}", project_name),
+            ));
+        }
+
+        Ok(())
+    }
+
+    async fn create_data_layer(&self, project_name: &str) -> io::Result<()> {
+        let path = format!("{}/{}-data", project_name, project_name);
+        let path = Path::new(&path);
+        let output = Command::new("cargo").arg("new").arg(path).output()?;
+
+        if !output.status.success() {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                format!("Error creating rust subproject: {}", project_name),
+            ));
+        }
+
+        Ok(())
     }
 }
 

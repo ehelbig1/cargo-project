@@ -8,6 +8,9 @@ pub trait Repository {
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()>;
     async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
     async fn create_cargo_file(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
+    async fn create_presentation_layer(&self, project_name: &str) -> io::Result<()>;
+    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()>;
+    async fn create_data_layer(&self, project_name: &str) -> io::Result<()>;
 }
 
 pub struct NewRepository {
@@ -38,6 +41,20 @@ impl Repository for NewRepository {
             .create_cargo_file(project_name, content)
             .await
     }
+
+    async fn create_presentation_layer(&self, project_name: &str) -> io::Result<()> {
+        self.datasource
+            .create_presentation_layer(project_name)
+            .await
+    }
+
+    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()> {
+        self.datasource.create_domain_layer(project_name).await
+    }
+
+    async fn create_data_layer(&self, project_name: &str) -> io::Result<()> {
+        self.datasource.create_data_layer(project_name).await
+    }
 }
 
 #[cfg(test)]
@@ -57,6 +74,18 @@ mod tests {
         }
 
         async fn create_cargo_file(&self, _project_name: &str, _content: &[u8]) -> io::Result<()> {
+            Ok(())
+        }
+
+        async fn create_presentation_layer(&self, _project_name: &str) -> io::Result<()> {
+            Ok(())
+        }
+
+        async fn create_domain_layer(&self, _project_name: &str) -> io::Result<()> {
+            Ok(())
+        }
+
+        async fn create_data_layer(&self, _project_name: &str) -> io::Result<()> {
             Ok(())
         }
     }
@@ -89,6 +118,39 @@ mod tests {
 
         let expect = ();
         let got = repository.create_cargo_file("test", b"test").await.unwrap();
+
+        assert_eq!(expect, got)
+    }
+
+    #[async_std::test]
+    async fn test_create_presentation() {
+        let datasource = Box::new(MockDatasource {});
+        let repository = NewRepository { datasource };
+
+        let expect = ();
+        let got = repository.create_presentation_layer("test").await.unwrap();
+
+        assert_eq!(expect, got)
+    }
+
+    #[async_std::test]
+    async fn test_create_domain() {
+        let datasource = Box::new(MockDatasource {});
+        let repository = NewRepository { datasource };
+
+        let expect = ();
+        let got = repository.create_domain_layer("test").await.unwrap();
+
+        assert_eq!(expect, got)
+    }
+
+    #[async_std::test]
+    async fn test_create_data() {
+        let datasource = Box::new(MockDatasource {});
+        let repository = NewRepository { datasource };
+
+        let expect = ();
+        let got = repository.create_data_layer("test").await.unwrap();
 
         assert_eq!(expect, got)
     }
