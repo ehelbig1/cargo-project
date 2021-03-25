@@ -103,7 +103,7 @@ impl Datasource for NewDatasource {
         project_name: &str,
         main_file_content: &[u8],
     ) -> io::Result<()> {
-        let path = format!("{}/{}-presentation", project_name, project_name);
+        let path = format!("{}/{}", project_name, project_name);
         let path = Path::new(&path);
         let output = Command::new("cargo").arg("new").arg(path).output()?;
 
@@ -114,18 +114,15 @@ impl Datasource for NewDatasource {
             ));
         }
 
-        let path = format!("{}/{}-presentation/src/core", project_name, project_name);
+        let path = format!("{}/{}/src/core", project_name, project_name);
         let path = Path::new(&path);
         let future_core_module = self.create_module(path);
 
-        let path = format!(
-            "{}/{}-presentation/src/features",
-            project_name, project_name
-        );
+        let path = format!("{}/{}/src/features", project_name, project_name);
         let path = Path::new(&path);
         let future_features_module = self.create_module(path);
 
-        let path = format!("{}/{}-presentation/src/main.rs", project_name, project_name);
+        let path = format!("{}/{}/src/main.rs", project_name, project_name);
         let path = Path::new(&path);
         let future_main_file = self.update_main_file(path, main_file_content);
 
@@ -141,7 +138,11 @@ impl Datasource for NewDatasource {
     ) -> io::Result<()> {
         let path = format!("{}/{}-domain", project_name, project_name);
         let path = Path::new(&path);
-        let output = Command::new("cargo").arg("new").arg(path).output()?;
+        let output = Command::new("cargo")
+            .arg("new")
+            .arg(path)
+            .arg("--lib")
+            .output()?;
 
         if !output.status.success() {
             return Err(io::Error::new(
@@ -174,7 +175,11 @@ impl Datasource for NewDatasource {
     ) -> io::Result<()> {
         let path = format!("{}/{}-data", project_name, project_name);
         let path = Path::new(&path);
-        let output = Command::new("cargo").arg("new").arg(path).output()?;
+        let output = Command::new("cargo")
+            .arg("new")
+            .arg(path)
+            .arg("--lib")
+            .output()?;
 
         if !output.status.success() {
             return Err(io::Error::new(

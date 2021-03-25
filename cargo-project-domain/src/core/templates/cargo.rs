@@ -6,7 +6,7 @@ use super::Template;
 
 static TEMPLATE: &str = "[workspace]
 members = [
-    \"{project}-presentation\",
+    \"{project}\",
     \"{project}-domain\",
     \"{project}-data\"
 ]";
@@ -43,7 +43,7 @@ mod tests {
 
         let expect = "[workspace]
 members = [
-    \"test-presentation\",
+    \"test\",
     \"test-domain\",
     \"test-data\"
 ]";
