@@ -44,7 +44,11 @@ impl NewDatasource {
     }
 
     async fn update_main_file(&self, path: &Path, content: &[u8]) -> io::Result<()> {
-        let mut file = OpenOptions::new().append(false).open(path).await?;
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(path)
+            .await?;
 
         file.write_all(content).await
     }
