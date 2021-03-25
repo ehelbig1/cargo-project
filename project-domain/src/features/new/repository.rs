@@ -8,7 +8,11 @@ pub trait Repository {
     async fn create_git_repo(&self, project_name: &str) -> io::Result<()>;
     async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
     async fn create_cargo_file(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
-    async fn create_presentation_layer(&self, project_name: &str) -> io::Result<()>;
+    async fn create_presentation_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()>;
     async fn create_domain_layer(&self, project_name: &str) -> io::Result<()>;
     async fn create_data_layer(&self, project_name: &str) -> io::Result<()>;
 }
@@ -42,9 +46,13 @@ impl Repository for NewRepository {
             .await
     }
 
-    async fn create_presentation_layer(&self, project_name: &str) -> io::Result<()> {
+    async fn create_presentation_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()> {
         self.datasource
-            .create_presentation_layer(project_name)
+            .create_presentation_layer(project_name, main_file_content)
             .await
     }
 
@@ -77,7 +85,11 @@ mod tests {
             Ok(())
         }
 
-        async fn create_presentation_layer(&self, _project_name: &str) -> io::Result<()> {
+        async fn create_presentation_layer(
+            &self,
+            _project_name: &str,
+            _main_file_content: &[u8],
+        ) -> io::Result<()> {
             Ok(())
         }
 
@@ -128,7 +140,10 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository.create_presentation_layer("test").await.unwrap();
+        let got = repository
+            .create_presentation_layer("test", b"test")
+            .await
+            .unwrap();
 
         assert_eq!(expect, got)
     }

@@ -4,6 +4,7 @@ use futures::try_join;
 use super::repository::{NewRepository, Repository};
 
 use crate::core::templates::cargo::CargoTemplate;
+use crate::core::templates::main::MainFileTemplate;
 use crate::core::templates::Template;
 
 #[async_trait]
@@ -39,7 +40,12 @@ impl Usecase for NewUsecase {
             .repository
             .create_cargo_file(project_name, cargo_file_content.as_bytes());
 
-        let future_presentation_layer = self.repository.create_presentation_layer(project_name);
+        let main_file_content = MainFileTemplate::new()
+            .render()
+            .expect("Error rendering MainFile template");
+        let future_presentation_layer = self
+            .repository
+            .create_presentation_layer(project_name, main_file_content.as_bytes());
         let future_domain_layer = self.repository.create_domain_layer(project_name);
         let future_data_layer = self.repository.create_data_layer(project_name);
 
@@ -84,7 +90,11 @@ mod tests {
             Ok(())
         }
 
-        async fn create_presentation_layer(&self, _project_name: &str) -> std::io::Result<()> {
+        async fn create_presentation_layer(
+            &self,
+            _project_name: &str,
+            _main_file_content: &[u8],
+        ) -> std::io::Result<()> {
             Ok(())
         }
 
