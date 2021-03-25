@@ -46,8 +46,12 @@ impl Usecase for NewUsecase {
         let future_presentation_layer = self
             .repository
             .create_presentation_layer(project_name, main_file_content.as_bytes());
-        let future_domain_layer = self.repository.create_domain_layer(project_name);
-        let future_data_layer = self.repository.create_data_layer(project_name);
+        let future_domain_layer = self
+            .repository
+            .create_domain_layer(project_name, main_file_content.as_bytes());
+        let future_data_layer = self
+            .repository
+            .create_data_layer(project_name, main_file_content.as_bytes());
 
         try_join!(
             future_gitignore,
@@ -98,11 +102,19 @@ mod tests {
             Ok(())
         }
 
-        async fn create_domain_layer(&self, _project_name: &str) -> std::io::Result<()> {
+        async fn create_domain_layer(
+            &self,
+            _project_name: &str,
+            _main_file_content: &[u8],
+        ) -> std::io::Result<()> {
             Ok(())
         }
 
-        async fn create_data_layer(&self, _project_name: &str) -> std::io::Result<()> {
+        async fn create_data_layer(
+            &self,
+            _project_name: &str,
+            _main_file_content: &[u8],
+        ) -> std::io::Result<()> {
             Ok(())
         }
     }

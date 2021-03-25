@@ -18,8 +18,18 @@ pub trait Datasource {
         project_name: &str,
         main_file_content: &[u8],
     ) -> io::Result<()>;
-    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()>;
-    async fn create_data_layer(&self, project_name: &str) -> io::Result<()>;
+
+    async fn create_domain_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()>;
+
+    async fn create_data_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()>;
 }
 
 pub struct NewDatasource {}
@@ -124,7 +134,11 @@ impl Datasource for NewDatasource {
         Ok(())
     }
 
-    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()> {
+    async fn create_domain_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()> {
         let path = format!("{}/{}-domain", project_name, project_name);
         let path = Path::new(&path);
         let output = Command::new("cargo").arg("new").arg(path).output()?;
@@ -136,10 +150,28 @@ impl Datasource for NewDatasource {
             ));
         }
 
+        let path = format!("{}/{}-domain/src/core", project_name, project_name);
+        let path = Path::new(&path);
+        let future_core_module = self.create_module(path);
+
+        let path = format!("{}/{}-domain/src/features", project_name, project_name);
+        let path = Path::new(&path);
+        let future_features_module = self.create_module(path);
+
+        let path = format!("{}/{}-domain/src/main.rs", project_name, project_name);
+        let path = Path::new(&path);
+        let future_main_file = self.update_main_file(path, main_file_content);
+
+        try_join!(future_core_module, future_features_module, future_main_file)?;
+
         Ok(())
     }
 
-    async fn create_data_layer(&self, project_name: &str) -> io::Result<()> {
+    async fn create_data_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()> {
         let path = format!("{}/{}-data", project_name, project_name);
         let path = Path::new(&path);
         let output = Command::new("cargo").arg("new").arg(path).output()?;
@@ -150,6 +182,20 @@ impl Datasource for NewDatasource {
                 format!("Error creating rust subproject: {}", project_name),
             ));
         }
+
+        let path = format!("{}/{}-data/src/core", project_name, project_name);
+        let path = Path::new(&path);
+        let future_core_module = self.create_module(path);
+
+        let path = format!("{}/{}-data/src/features", project_name, project_name);
+        let path = Path::new(&path);
+        let future_features_module = self.create_module(path);
+
+        let path = format!("{}/{}-data/src/main.rs", project_name, project_name);
+        let path = Path::new(&path);
+        let future_main_file = self.update_main_file(path, main_file_content);
+
+        try_join!(future_core_module, future_features_module, future_main_file)?;
 
         Ok(())
     }

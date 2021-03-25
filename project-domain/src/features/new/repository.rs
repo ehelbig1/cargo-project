@@ -13,8 +13,18 @@ pub trait Repository {
         project_name: &str,
         main_file_content: &[u8],
     ) -> io::Result<()>;
-    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()>;
-    async fn create_data_layer(&self, project_name: &str) -> io::Result<()>;
+
+    async fn create_domain_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()>;
+
+    async fn create_data_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()>;
 }
 
 pub struct NewRepository {
@@ -56,12 +66,24 @@ impl Repository for NewRepository {
             .await
     }
 
-    async fn create_domain_layer(&self, project_name: &str) -> io::Result<()> {
-        self.datasource.create_domain_layer(project_name).await
+    async fn create_domain_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()> {
+        self.datasource
+            .create_domain_layer(project_name, main_file_content)
+            .await
     }
 
-    async fn create_data_layer(&self, project_name: &str) -> io::Result<()> {
-        self.datasource.create_data_layer(project_name).await
+    async fn create_data_layer(
+        &self,
+        project_name: &str,
+        main_file_content: &[u8],
+    ) -> io::Result<()> {
+        self.datasource
+            .create_data_layer(project_name, main_file_content)
+            .await
     }
 }
 
@@ -93,11 +115,19 @@ mod tests {
             Ok(())
         }
 
-        async fn create_domain_layer(&self, _project_name: &str) -> io::Result<()> {
+        async fn create_domain_layer(
+            &self,
+            _project_name: &str,
+            _main_file_content: &[u8],
+        ) -> io::Result<()> {
             Ok(())
         }
 
-        async fn create_data_layer(&self, _project_name: &str) -> io::Result<()> {
+        async fn create_data_layer(
+            &self,
+            _project_name: &str,
+            _main_file_content: &[u8],
+        ) -> io::Result<()> {
             Ok(())
         }
     }
@@ -154,7 +184,10 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository.create_domain_layer("test").await.unwrap();
+        let got = repository
+            .create_domain_layer("test", b"test")
+            .await
+            .unwrap();
 
         assert_eq!(expect, got)
     }
@@ -165,7 +198,7 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository.create_data_layer("test").await.unwrap();
+        let got = repository.create_data_layer("test", b"test").await.unwrap();
 
         assert_eq!(expect, got)
     }
