@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use project_data::features::add::datasource::{AddDatasource, Datasource};
+use cargo_project_data::features::add::datasource::{AddDatasource, Datasource};
 use std::io;
 
 #[async_trait]

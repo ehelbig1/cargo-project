@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "project-cli",
-    "project-domain",
-    "project-data"
+    "cargo-project",
+    "cargo-project-domain",
+    "cargo-project-data"
 ]

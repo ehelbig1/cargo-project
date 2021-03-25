@@ -208,6 +208,37 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "631ae5198c9be5e753e5cc215e1bd73c2b466a3565173db433f52bb9d3e66dba"
 
 [[package]]
+name = "cargo-project"
+version = "0.1.0"
+dependencies = [
+ "cargo-project-domain",
+ "futures",
+ "structopt",
+]
+
+[[package]]
+name = "cargo-project-data"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "async-trait",
+ "futures",
+]
+
+[[package]]
+name = "cargo-project-domain"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "async-trait",
+ "cargo-project-data",
+ "futures",
+ "serde",
+ "tinytemplate",
+ "titlecase",
+]
+
+[[package]]
 name = "cc"
 version = "1.0.67"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -578,37 +609,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e0704ee1a7e00d7bb417d0770ea303c1bccbabf0ef1667dae92b5967f5f8a71"
 dependencies = [
  "unicode-xid",
-]
-
-[[package]]
-name = "project-cli"
-version = "0.1.0"
-dependencies = [
- "futures",
- "project-domain",
- "structopt",
-]
-
-[[package]]
-name = "project-data"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "async-trait",
- "futures",
-]
-
-[[package]]
-name = "project-domain"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "async-trait",
- "futures",
- "project-data",
- "serde",
- "tinytemplate",
- "titlecase",
 ]
 
 [[package]]

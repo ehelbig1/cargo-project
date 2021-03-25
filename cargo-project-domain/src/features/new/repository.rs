@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use std::io;
 
-use project_data::features::new::datasource::{Datasource, NewDatasource};
+use cargo_project_data::features::new::datasource::{Datasource, NewDatasource};
 
 #[async_trait]
 pub trait Repository {

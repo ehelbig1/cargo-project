@@ -1,5 +1,5 @@
 [package]
-name = "project-domain"
+name = "cargo-project-domain"
 version = "0.1.0"
 authors = ["Evan Helbig <evan.helbig@willowtreeapps.com>"]
 edition = "2018"
@@ -10,7 +10,7 @@ edition = "2018"
 async-std = { version = "1.9.0", features = ["attributes"] }
 async-trait = "0.1.48"
 futures = "0.3.13"
-project-data = { path = "../project-data" }
+cargo-project-data = { path = "../cargo-project-data" }
 serde = { version = "1.0", features = ["derive"] }
 tinytemplate = "1.2.1"
 titlecase = "1.1.0"

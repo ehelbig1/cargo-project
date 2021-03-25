@@ -1,5 +1,5 @@
+use cargo_project_domain::features::add::usecase::{AddUsecase, Usecase};
 use futures::executor::block_on;
-use project_domain::features::add::usecase::{AddUsecase, Usecase};
 use structopt::StructOpt;
 
 use crate::core::run::Run;

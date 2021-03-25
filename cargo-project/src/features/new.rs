@@ -2,7 +2,7 @@ use futures::executor::block_on;
 use structopt::StructOpt;
 
 use crate::core::run::Run;
-use project_domain::features::new::usecase::{NewUsecase, Usecase};
+use cargo_project_domain::features::new::usecase::{NewUsecase, Usecase};
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct New {
