@@ -1,89 +1,56 @@
 use async_trait::async_trait;
 use std::io;
+use std::path::Path;
 
 use cargo_project_data::features::new::datasource::{Datasource, NewDatasource};
 
 #[async_trait]
 pub trait Repository {
-    async fn create_git_repo(&self, project_name: &str) -> io::Result<()>;
-    async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
-    async fn create_cargo_file(&self, project_name: &str, content: &[u8]) -> io::Result<()>;
-    async fn create_presentation_layer(
-        &self,
-        project_name: &str,
-        main_file_content: &[u8],
-    ) -> io::Result<()>;
-
-    async fn create_domain_layer(
-        &self,
-        project_name: &str,
-        main_file_content: &[u8],
-    ) -> io::Result<()>;
-
-    async fn create_data_layer(
-        &self,
-        project_name: &str,
-        main_file_content: &[u8],
-    ) -> io::Result<()>;
+    async fn create_git_repo(&self) -> io::Result<()>;
+    async fn create_gitignore(&self, content: &[u8]) -> io::Result<()>;
+    async fn create_cargo_file(&self, content: &[u8]) -> io::Result<()>;
+    async fn create_presentation_layer(&self, main_file_content: &[u8]) -> io::Result<()>;
+    async fn create_domain_layer(&self, main_file_content: &[u8]) -> io::Result<()>;
+    async fn create_data_layer(&self, main_file_content: &[u8]) -> io::Result<()>;
 }
 
-pub struct NewRepository {
-    datasource: Box<dyn Datasource + Send + Sync>,
+pub struct NewRepository<'a> {
+    datasource: Box<dyn Datasource + Send + Sync + 'a>,
 }
 
-impl NewRepository {
-    pub fn new() -> Self {
-        let datasource = Box::new(NewDatasource::new());
+impl<'a> NewRepository<'a> {
+    pub fn new(project_name: &'a str, project_path: &'a Path) -> Self {
+        let datasource = Box::new(NewDatasource::new(project_name, project_path));
         Self { datasource }
     }
 }
 
 #[async_trait]
-impl Repository for NewRepository {
-    async fn create_git_repo(&self, project_name: &str) -> io::Result<()> {
-        self.datasource.create_git_repo(project_name).await
+impl<'a> Repository for NewRepository<'a> {
+    async fn create_git_repo(&self) -> io::Result<()> {
+        self.datasource.create_git_repo().await
     }
 
-    async fn create_gitignore(&self, project_name: &str, content: &[u8]) -> io::Result<()> {
+    async fn create_gitignore(&self, content: &[u8]) -> io::Result<()> {
+        self.datasource.create_gitignore(content).await
+    }
+
+    async fn create_cargo_file(&self, content: &[u8]) -> io::Result<()> {
+        self.datasource.create_cargo_file(content).await
+    }
+
+    async fn create_presentation_layer(&self, main_file_content: &[u8]) -> io::Result<()> {
         self.datasource
-            .create_gitignore(project_name, content)
+            .create_presentation_layer(main_file_content)
             .await
     }
 
-    async fn create_cargo_file(&self, project_name: &str, content: &[u8]) -> io::Result<()> {
-        self.datasource
-            .create_cargo_file(project_name, content)
-            .await
+    async fn create_domain_layer(&self, main_file_content: &[u8]) -> io::Result<()> {
+        self.datasource.create_domain_layer(main_file_content).await
     }
 
-    async fn create_presentation_layer(
-        &self,
-        project_name: &str,
-        main_file_content: &[u8],
-    ) -> io::Result<()> {
-        self.datasource
-            .create_presentation_layer(project_name, main_file_content)
-            .await
-    }
-
-    async fn create_domain_layer(
-        &self,
-        project_name: &str,
-        main_file_content: &[u8],
-    ) -> io::Result<()> {
-        self.datasource
-            .create_domain_layer(project_name, main_file_content)
-            .await
-    }
-
-    async fn create_data_layer(
-        &self,
-        project_name: &str,
-        main_file_content: &[u8],
-    ) -> io::Result<()> {
-        self.datasource
-            .create_data_layer(project_name, main_file_content)
-            .await
+    async fn create_data_layer(&self, main_file_content: &[u8]) -> io::Result<()> {
+        self.datasource.create_data_layer(main_file_content).await
     }
 }
 
@@ -95,39 +62,27 @@ mod tests {
 
     #[async_trait]
     impl Datasource for MockDatasource {
-        async fn create_git_repo(&self, _project_name: &str) -> io::Result<()> {
+        async fn create_git_repo(&self) -> io::Result<()> {
             Ok(())
         }
 
-        async fn create_gitignore(&self, _project_name: &str, _content: &[u8]) -> io::Result<()> {
+        async fn create_gitignore(&self, _content: &[u8]) -> io::Result<()> {
             Ok(())
         }
 
-        async fn create_cargo_file(&self, _project_name: &str, _content: &[u8]) -> io::Result<()> {
+        async fn create_cargo_file(&self, _content: &[u8]) -> io::Result<()> {
             Ok(())
         }
 
-        async fn create_presentation_layer(
-            &self,
-            _project_name: &str,
-            _main_file_content: &[u8],
-        ) -> io::Result<()> {
+        async fn create_presentation_layer(&self, _main_file_content: &[u8]) -> io::Result<()> {
             Ok(())
         }
 
-        async fn create_domain_layer(
-            &self,
-            _project_name: &str,
-            _main_file_content: &[u8],
-        ) -> io::Result<()> {
+        async fn create_domain_layer(&self, _main_file_content: &[u8]) -> io::Result<()> {
             Ok(())
         }
 
-        async fn create_data_layer(
-            &self,
-            _project_name: &str,
-            _main_file_content: &[u8],
-        ) -> io::Result<()> {
+        async fn create_data_layer(&self, _main_file_content: &[u8]) -> io::Result<()> {
             Ok(())
         }
     }
@@ -137,7 +92,7 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository.create_git_repo("test").await.unwrap();
+        let got = repository.create_git_repo().await.unwrap();
 
         assert_eq!(expect, got)
     }
@@ -148,7 +103,7 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository.create_gitignore("test", b"test").await.unwrap();
+        let got = repository.create_gitignore(b"test").await.unwrap();
 
         assert_eq!(expect, got)
     }
@@ -159,7 +114,7 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository.create_cargo_file("test", b"test").await.unwrap();
+        let got = repository.create_cargo_file(b"test").await.unwrap();
 
         assert_eq!(expect, got)
     }
@@ -170,10 +125,7 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository
-            .create_presentation_layer("test", b"test")
-            .await
-            .unwrap();
+        let got = repository.create_presentation_layer(b"test").await.unwrap();
 
         assert_eq!(expect, got)
     }
@@ -184,10 +136,7 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository
-            .create_domain_layer("test", b"test")
-            .await
-            .unwrap();
+        let got = repository.create_domain_layer(b"test").await.unwrap();
 
         assert_eq!(expect, got)
     }
@@ -198,7 +147,7 @@ mod tests {
         let repository = NewRepository { datasource };
 
         let expect = ();
-        let got = repository.create_data_layer("test", b"test").await.unwrap();
+        let got = repository.create_data_layer(b"test").await.unwrap();
 
         assert_eq!(expect, got)
     }
