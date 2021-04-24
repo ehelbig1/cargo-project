@@ -4,6 +4,7 @@ pub mod cargo;
 pub mod cli;
 pub mod datasource;
 pub mod entities;
+pub mod lib;
 pub mod main;
 pub mod mod_file;
 pub mod models;

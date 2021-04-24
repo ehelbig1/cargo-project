@@ -81,11 +81,11 @@ impl Datasource for AddDatasource {
         cli_file_content: &[u8],
         parent_mod_file_content: &[u8],
     ) -> io::Result<()> {
-        let path = format!("{}-cli/src/features/mod.rs", project);
+        let path = format!("{}/src/features/mod.rs", project);
         let path = Path::new(&path);
         let future_parent_mod_file = self.append_mod_file(path, parent_mod_file_content);
 
-        let path = format!("{}-cli/src/features/{}.rs", project, name);
+        let path = format!("{}/src/features/{}.rs", project, name);
         let path = Path::new(&path);
         let future_cli_file = self.create_and_write_file(path, cli_file_content);
 

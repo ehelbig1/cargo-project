@@ -14,8 +14,8 @@ pub trait Datasource {
     async fn create_gitignore(&self, content: &[u8]) -> io::Result<()>;
     async fn create_cargo_file(&self, content: &[u8]) -> io::Result<()>;
     async fn create_presentation_layer(&self, main_file_content: &[u8]) -> io::Result<()>;
-    async fn create_domain_layer(&self, main_file_content: &[u8]) -> io::Result<()>;
-    async fn create_data_layer(&self, main_file_content: &[u8]) -> io::Result<()>;
+    async fn create_domain_layer(&self, lib_file_content: &[u8]) -> io::Result<()>;
+    async fn create_data_layer(&self, lib_file_content: &[u8]) -> io::Result<()>;
 }
 
 pub struct NewDatasource<'a> {
@@ -47,7 +47,7 @@ impl<'a> NewDatasource<'a> {
         Ok(())
     }
 
-    async fn update_main_file(&self, path: &Path, content: &[u8]) -> io::Result<()> {
+    async fn update_file(&self, path: &Path, content: &[u8]) -> io::Result<()> {
         let mut file = OpenOptions::new()
             .write(true)
             .truncate(true)
@@ -163,14 +163,14 @@ impl<'a> Datasource for NewDatasource<'a> {
             self.project_name
         );
         let path = Path::new(&path);
-        let future_main_file = self.update_main_file(path, main_file_content);
+        let future_main_file = self.update_file(path, main_file_content);
 
         try_join!(future_core_module, future_features_module, future_main_file)?;
 
         Ok(())
     }
 
-    async fn create_domain_layer(&self, main_file_content: &[u8]) -> io::Result<()> {
+    async fn create_domain_layer(&self, lib_file_content: &[u8]) -> io::Result<()> {
         let path = format!(
             "{}/{}/{}-domain",
             self.project_path
@@ -224,14 +224,14 @@ impl<'a> Datasource for NewDatasource<'a> {
             self.project_name
         );
         let path = Path::new(&path);
-        let future_main_file = self.update_main_file(path, main_file_content);
+        let future_lib_file = self.update_file(path, lib_file_content);
 
-        try_join!(future_core_module, future_features_module, future_main_file)?;
+        try_join!(future_core_module, future_features_module, future_lib_file)?;
 
         Ok(())
     }
 
-    async fn create_data_layer(&self, main_file_content: &[u8]) -> io::Result<()> {
+    async fn create_data_layer(&self, lib_file_content: &[u8]) -> io::Result<()> {
         let path = format!(
             "{}/{}/{}-data",
             self.project_path
@@ -285,9 +285,9 @@ impl<'a> Datasource for NewDatasource<'a> {
             self.project_name
         );
         let path = Path::new(&path);
-        let future_main_file = self.update_main_file(path, main_file_content);
+        let future_lib_file = self.update_file(path, lib_file_content);
 
-        try_join!(future_core_module, future_features_module, future_main_file)?;
+        try_join!(future_core_module, future_features_module, future_lib_file)?;
 
         Ok(())
     }

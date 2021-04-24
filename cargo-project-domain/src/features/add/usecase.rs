@@ -1,3 +1,5 @@
+use std::env;
+
 use async_trait::async_trait;
 use futures::try_join;
 use titlecase::titlecase;
@@ -34,15 +36,21 @@ impl AddUsecase {
 #[async_trait]
 impl Usecase for AddUsecase {
     async fn add_feature(&self, name: &str) -> String {
-        const PKG_NAME: &'static str = env!("CARGO_PKG_NAME");
+        let current_dir =
+            env::current_dir().expect("Error reading current directory from environment");
 
-        let mut project = PKG_NAME.split("-");
-        let project = project
-            .next()
-            .expect(&format!("Error parsing cargo package name: {}", PKG_NAME));
+        let project = current_dir
+            .file_name()
+            .expect("Error reading file name from current executable")
+            .to_str()
+            .expect("Can't convert file name to str")
+            .split("/");
+
+        let project = project.last().expect("Error parsing current directory");
+
         let name_title_case = titlecase(name);
 
-        if !in_root_directory(project).await {
+        if !in_root_directory(&project).await {
             return String::from("Not currently in the root of a project");
         }
 

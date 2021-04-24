@@ -5,6 +5,7 @@ use std::path::Path;
 use super::repository::{NewRepository, Repository};
 
 use crate::core::templates::cargo::CargoTemplate;
+use crate::core::templates::lib::LibFileTemplate;
 use crate::core::templates::main::MainFileTemplate;
 use crate::core::templates::Template;
 
@@ -51,12 +52,16 @@ impl<'a> Usecase for NewUsecase<'a> {
         let future_presentation_layer = self
             .repository
             .create_presentation_layer(main_file_content.as_bytes());
+
+        let lib_file_content = LibFileTemplate::new()
+            .render()
+            .expect("Error rendering LibFile template");
         let future_domain_layer = self
             .repository
-            .create_domain_layer(main_file_content.as_bytes());
+            .create_domain_layer(lib_file_content.as_bytes());
         let future_data_layer = self
             .repository
-            .create_data_layer(main_file_content.as_bytes());
+            .create_data_layer(lib_file_content.as_bytes());
 
         try_join!(
             future_gitignore,
